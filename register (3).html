@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Golden Ascent (Malaysia)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background-color: #121212; color: white; }
+        .card { background-color: #1e1e1e; color: white; }
+        .btn-primary, .btn-secondary, .btn-success, .btn-warning { color: white; }
+    </style>
+</head>
+<body class="bg-dark text-light">
+    <div class="container py-4">
+        <header class="text-center mb-4">
+            <h1 class="text-warning">The Golden Ascent (Malaysia)</h1>
+        </header>
+        <main>
+            <section id="pool-section" class="mb-4">
+                <h2 class="text-info">Pools</h2>
+                <div id="pools-container" class="row g-3">
+                    <!-- Pools will be dynamically added here -->
+                </div>
+                <button id="add-pool" class="btn btn-primary mt-3">Add Pool</button>
+            </section>
+            <section id="group-section" class="mt-4">
+                <h2 class="text-info">Groups</h2>
+                <label for="max-teams">Select Maximum Teams per Group:</label>
+                <select id="max-teams" class="form-select w-auto d-inline-block mb-2 bg-dark text-light">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+                <div id="groups-container" class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card p-3 shadow">
+                            <h5 class="card-title">Group A</h5>
+                            <ul class="list-group bg-dark" id="group-a"></ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card p-3 shadow">
+                            <h5 class="card-title">Group B</h5>
+                            <ul class="list-group bg-dark" id="group-b"></ul>
+                        </div>
+                    </div>
+                </div>
+                <button id="add-group" class="btn btn-secondary mt-3">Add Group</button>
+            </section>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let pools = [];
+        let groupCount = 2;
+        document.getElementById('add-pool').addEventListener('click', function() {
+            let poolContainer = document.getElementById('pools-container');
+            let poolId = pools.length + 1;
+            let poolDiv = document.createElement('div');
+            poolDiv.classList.add('col-md-4');
+            poolDiv.innerHTML = `<div class="card p-3 shadow">
+                <h5 class="card-title">Pool ${poolId}</h5>
+                <ul class="list-group team-list mb-2 bg-dark"></ul>
+                <input type="text" placeholder="Team Name" class="form-control team-input mb-2 bg-dark text-light">
+                <button class="btn btn-success add-team">Add Team</button>
+                <button class="btn btn-warning select-team mt-2">Select Team</button>
+            </div>`;
+            poolContainer.appendChild(poolDiv);
+            pools.push(poolDiv);
+        });document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('add-team')) {
+            let teamInput = e.target.previousElementSibling;
+            let teamList = e.target.parentElement.querySelector('.team-list');
+            if (teamInput.value.trim() !== '') {
+                let li = document.createElement('li');
+                li.textContent = teamInput.value;
+                li.classList.add('list-group-item', 'bg-dark', 'text-light');
+                teamList.appendChild(li);
+                teamInput.value = '';
+            }
+        }
+        if (e.target.classList.contains('select-team')) {
+            let teamList = e.target.parentElement.querySelector('.team-list');
+            let maxTeams = parseInt(document.getElementById('max-teams').value);
+            let groups = document.querySelectorAll('#groups-container .list-group');
+            
+            if (teamList.children.length > 0) {
+                let randomIndex = Math.floor(Math.random() * teamList.children.length);
+                let selectedTeam = teamList.children[randomIndex];
+                let selectedTeamName = selectedTeam.textContent;
+                teamList.removeChild(selectedTeam);
+                
+                for (let group of groups) {
+                    if (group.children.length < maxTeams) {
+                        let li = document.createElement('li');
+                        li.classList.add('list-group-item', 'bg-dark', 'text-light');
+                        li.textContent = selectedTeamName;
+                        group.appendChild(li);
+                        return;
+                    }
+                }
+            }
+        }
+    });
+
+    document.getElementById('add-group').addEventListener('click', function() {
+        let groupsContainer = document.getElementById('groups-container');
+        let groupName = String.fromCharCode(65 + groupCount);
+        let groupDiv = document.createElement('div');
+        groupDiv.classList.add('col-md-6');
+        groupDiv.innerHTML = `<div class="card p-3 shadow">
+            <h5 class="card-title">Group ${groupName}</h5>
+            <ul class="list-group bg-dark" id="group-${groupName.toLowerCase()}"></ul>
+        </div>`;
+        groupsContainer.appendChild(groupDiv);
+        groupCount++;
+    });
+</script>
+
+</body>
+</html>
